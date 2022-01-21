@@ -96,4 +96,19 @@ public class SectionService implements IDao<Section> {
         }
         return null;
     }
+
+    public int count() {
+        String sql = "select count(*) from " + this.tableName;
+        try {
+            PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("stats " + e.getMessage());
+        }
+        return 0;
+    }
 }

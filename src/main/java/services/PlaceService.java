@@ -121,4 +121,19 @@ public class PlaceService implements IDao<Place> {
         }
         return false;
     }
+
+    public int count() {
+        String sql = "select count(*) from " + this.tableName;
+        try {
+            PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("stats " + e.getMessage());
+        }
+        return 0;
+    }
 }

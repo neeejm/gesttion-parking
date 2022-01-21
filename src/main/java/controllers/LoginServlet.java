@@ -37,9 +37,11 @@ public class LoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
-        if (us.login(username, password)) {
+        int id = us.login(username, password);
+        if (id != 0) {
             HttpSession ses = req.getSession();
             ses.setAttribute("username", username);
+            ses.setAttribute("uid", id);
             resp.sendRedirect("home.jsp");
         } else {
             req.setAttribute("error", true);

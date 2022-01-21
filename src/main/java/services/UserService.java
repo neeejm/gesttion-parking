@@ -104,7 +104,7 @@ public class UserService implements IDao<User> {
         return null;
     }
 
-    public boolean login(String username, String password) {
+    public int login(String username, String password) {
         String sql = "select * from " + this.tableName + " where username=? and password=?";
         try {
             PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
@@ -112,13 +112,27 @@ public class UserService implements IDao<User> {
             ps.setString(2, tools.Hash.hashPwd(password));
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return true;
+                return rs.getInt("id");
             }
 
         } catch (SQLException e) {
             System.out.println("findById " + e.getMessage());
         }
-        return false;
+        return 0;
     }
 
+    public int count() {
+        String sql = "select count(*) from " + this.tableName;
+        try {
+            PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("stats " + e.getMessage());
+        }
+        return 0;
+    }
 }

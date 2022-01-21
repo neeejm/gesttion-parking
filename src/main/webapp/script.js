@@ -16,6 +16,9 @@ const sectionHtml = (code, id) => {
 
 const placeHtml = (code, num, type, etat, id_place) => {
     type = (type == 1) ? "Voiture" : "moto";
+    // let mode = (etat) ? `annuler(${uid}, ${id_place})` : `reserverPlace(${uid}, ${id_place})`
+    let action = (etat) ? `annuler` : `pas occupé`
+    etat = (etat) ? "occupé" : "pas occupé"
     return `
         <li class="py-3 flex justify-between text-sm text-gray-500 font-semibold">
             <p class="px-4 font-semibold">${code}</p>
@@ -25,6 +28,41 @@ const placeHtml = (code, num, type, etat, id_place) => {
             <a href="#"
                 class="px-4 py-2 text-xs bg-blue-100 text-blue-500 rounded uppercase tracking-wider font-semibold hover:bg-blue-300"
                 onclick="removePlace(${id_place})">supprimer</a>
+            <a href="#"
+                class="px-4 py-2 text-xs bg-blue-100 text-blue-500 rounded uppercase tracking-wider font-semibold hover:bg-blue-300"
+                onclick="annuler(${id_place})">${action}</a>
+        </li>
+    `;
+}
+
+const reserverHtml = (code, num, type, etat, id_place) => {
+    let uid = $("#uid").html();
+    type = (type == 1) ? "Voiture" : "moto";
+    // let mode = (etat) ? `annuler(${uid}, ${id_place})` : `reserverPlace(${uid}, ${id_place})`
+    let mode = (etat) ? `` : `reserverPlace(${uid}, ${id_place})`
+    let action = (etat) ? `occupé` : `reserver`
+    etat = (etat) ? "occupé" : "pas occupé"
+    return `
+        <li class="py-3 flex justify-between text-sm text-gray-500 font-semibold">
+            <p class="px-4 font-semibold">${code}</p>
+            <p class="px-4 text-gray-600">${num}</p>
+            <p class="px-4 tracking-wider">${type}</p>
+            <p class="px-4 text-blue-600">${etat}</p>
+            <a href="#"
+                class="px-4 py-2 text-xs bg-blue-100 text-blue-500 rounded uppercase tracking-wider font-semibold hover:bg-blue-300" value="${id_place}"
+                onclick="${mode}">${action}</a>
+        </li>
+    `;
+}
+
+const reservationHtml = (code, num, type, date) => {
+    type = (type == 1) ? "Voiture" : "moto";
+    return `
+        <li class="py-3 flex justify-between text-sm text-gray-500 font-semibold">
+            <p class="px-4 font-semibold">${code}</p>
+            <p class="px-4 text-gray-600">${num}</p>
+            <p class="px-4 tracking-wider">${type}</p>
+            <p class="px-4 text-blue-600">${date}</p>
         </li>
     `;
 }
@@ -55,14 +93,39 @@ const getSectionsDropDown = () => {
         .catch(error => console.log('error', error));
 }
 
-const getPlaces = () => {
+const getPlaces = (mode) => {
     $("#places").empty();
+    $("#reserver").empty();
     fetch(`http://localhost:4000/eparking/api/v1/place`)
+        .then(response => response.json())
+        .then(result => {
+            switch (mode) {
+                case 1:
+                    result.forEach(element => {
+                        // console.log(element.code, element.id);
+                        $("#places").append(placeHtml(element.section.code, element.numero, element.type, element.etat, element.id));
+                    });
+                    break;
+                case 2:
+                    result.forEach(element => {
+                        // console.log(element.code, element.id);
+                        $("#reserver").append(reserverHtml(element.section.code, element.numero, element.type, element.etat, element.id));
+                    });
+                    break;
+            }
+        })
+        .catch(error => console.log('error', error));
+}
+
+const getReservation = () => {
+    let uid = document.getElementById("uid");
+    uid = uid.innerText;
+    fetch(`http://localhost:4000/eparking/api/v1/reserver?id=${uid.trim()}`)
         .then(response => response.json())
         .then(result => {
             result.forEach(element => {
                 // console.log(element.code, element.id);
-                $("#places").append(placeHtml(element.section.code, element.numero, element.type, element.etat, element.id));
+                $("#reservation").append(reservationHtml(element.place.section.code, element.place.numero, element.place.type, element.dateIn));
             });
         })
         .catch(error => console.log('error', error));
@@ -70,7 +133,9 @@ const getPlaces = () => {
 
 $("#secttion-page").on("load", getSections());
 $("#sec").on("load", getSectionsDropDown());
-$("#places").on("load", getPlaces());
+$("#places").on("load", getPlaces(1));
+$("#reserver").on("load", getPlaces(2));
+$("#reservation").on("load", getReservation());
 
 $("#generator").on("click", () => {
     let gen = "cx";
@@ -140,7 +205,7 @@ $("#add-place").on("click", () => {
         .then(response => response.json())
         .then(result => {
             console.log(result);
-            getPlaces();
+            getPlaces(1);
         })
         .catch(error => console.log('error', error));
     // console.log()
@@ -156,7 +221,66 @@ const removePlace = (id) => {
         .then(response => response.json())
         .then(result => {
             console.log(result);
-            getPlaces();
+            getPlaces(1);
         })
         .catch(error => console.log('error', error));
 }
+
+const annuler = (id) => {
+    // console.log(id)
+    fetch(`http://localhost:4000/eparking/api/v1/reserver?place_id=${id}`, {
+        // mode: "no-cors",
+        method: 'PUT'
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            getPlaces(1);
+        })
+        .catch(error => {
+            console.log('error', error);
+            getPlaces(1);
+        });
+}
+
+const reserverPlace = (id_user, id_place) => {
+    // console.log(id)
+    let mat = $("#mat").val();
+    fetch(`http://localhost:4000/eparking/api/v1/reserver`, {
+        method: "POST",
+        body: JSON.stringify(
+            {
+                user: {
+                    id: id_user
+                },
+                place: {
+                    id: id_place
+                },
+                matricule: mat
+            }
+        )
+    })
+        .then(response => response.json())
+        .then(result => {
+            console.log(result);
+            getPlaces(2);
+        })
+        .catch(error => console.log('error', error));
+}
+
+const setNums = (result) => {
+    $("#num_user").html(result["user"]);
+    $("#num_section").html(result["section"]);
+    $("#num_place").html(result["place"]);
+    $("#num_reservation").html(result["reservation"]);
+}
+const getStats = () => {
+    fetch(`http://localhost:4000/eparking/api/v1/stats?all=yims`)
+        .then(response => response.json())
+        .then(result => {
+            setNums(result);
+        })
+        .catch(error => console.log('error', error));
+}
+
+$("#stats").on("load", getStats());

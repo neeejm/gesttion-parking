@@ -53,14 +53,17 @@
         </main>
         <div>
             <div class="col-span-3 bg-white p-6 rounded-xl border border-gray-50 flex flex-col space-y-6">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-sm text-gray-600 font-bold tracking-wide">Liste Places:</h2>
+                </div>
                 <ul class="divide-y-2 divide-gray-100 overflow-x-auto w-full">
                     <li class="py-3 flex justify-between text-sm text-gray-500 font-semibold">
                         <p class="px-4 font-semibold">Section</p>
                         <p class="px-4 text-gray-600">Place</p>
                         <p class="px-4 tracking-wider">Type</p>
                         <p class="px-4 text-blue-600">Etat</p>
-                        <a href="#"
-                            class="px-4 py-2 text-xs bg-blue-100 text-blue-500 rounded uppercase tracking-wider font-semibold hover:bg-blue-300">Bouton</a>
+                        <p class="px-4 text-blue-600">Supprimer</p>
+                        <p class="px-4 text-blue-600">Annuler</p>
                     </li>
                     <div id="places">
                     </div>

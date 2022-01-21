@@ -88,10 +88,9 @@ public class ReservationServlet extends HttpServlet {
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // get section by id if id is given in the request param
-        if (req.getParameter("user_id") != null && req.getParameter("place_id") != null) {
-            String uid = req.getParameter("user_id");
+        if (req.getParameter("place_id") != null) {
             String pid = req.getParameter("place_id");
-            if (rs.cancel(rs.findById(Integer.parseInt(uid), Integer.parseInt(pid)))) {
+            if (rs.cancel(rs.findById(Integer.parseInt(pid)))) {
                 PrintWriter out = resp.getWriter();
                 resp.setStatus(HttpServletResponse.SC_OK);
                 resp.setContentType("application/json");
@@ -106,7 +105,7 @@ public class ReservationServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_ACCEPTED);
             resp.setContentType("application/json");
             resp.setCharacterEncoding("UTF-8");
-            out.print("{'msg' : 'could not cancel'}");
+            out.print("{\"msg\" : \"could not canceled\"}");
             out.flush();
             return;
 

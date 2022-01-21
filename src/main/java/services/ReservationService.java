@@ -5,7 +5,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import connexion.Connexion;
 import dao.IDao;
@@ -20,6 +22,8 @@ public class ReservationService implements IDao<Reservation> {
                 + " (id_user, id_place, date_in, matricule) values (?, ?, now(), ?)";
         try {
             PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            PlaceService pls = new PlaceService();
+            pls.updateEtat(o.getPlace(), true);
             ps.setInt(1, o.getUser().getId());
             ps.setInt(2, o.getPlace().getId());
             // ps.setDate(3, (java.sql.Date) new Date());
@@ -117,7 +121,7 @@ public class ReservationService implements IDao<Reservation> {
 
     @Override
     public Reservation findById(int id) {
-        String sql = "select * from " + this.tableName + " where id_user=?";
+        String sql = "select * from " + this.tableName + " where id_place=?";
         try {
             UserService us = new UserService();
             PlaceService pls = new PlaceService();
@@ -158,13 +162,12 @@ public class ReservationService implements IDao<Reservation> {
     }
 
     public boolean cancel(Reservation o) {
-        String sql = "update " + this.tableName + " set date_out=now() where id_user=? and id_place=?";
+        String sql = "update " + this.tableName + " set date_out=now() where id_place=?";
         try {
             PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
             PlaceService pls = new PlaceService();
             pls.updateEtat(o.getPlace(), false);
-            ps.setInt(1, o.getUser().getId());
-            ps.setInt(2, o.getPlace().getId());
+            ps.setInt(1, o.getPlace().getId());
             if (ps.executeUpdate() == 1) {
                 return true;
             }
@@ -173,5 +176,36 @@ public class ReservationService implements IDao<Reservation> {
 
         }
         return false;
+    }
+
+    public Map<? extends String, ? extends Integer> reservationBySection() {
+        HashMap<String, Integer> stats = new HashMap<>();
+        String sql = "select count(*), s.code from public.reservation r, public.place p, public.section s where r.id_place = p.id and p.id_section = s.id group by s.code";
+        try {
+            PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                stats.put(rs.getString("code"), rs.getInt("count"));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("stats " + e.getMessage());
+        }
+        return stats;
+    }
+
+    public int count() {
+        String sql = "select count(*) from " + this.tableName;
+        try {
+            PreparedStatement ps = Connexion.getInstane().getConnection().prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("count");
+            }
+
+        } catch (SQLException e) {
+            System.out.println("stats " + e.getMessage());
+        }
+        return 0;
     }
 }
