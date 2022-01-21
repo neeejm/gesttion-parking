@@ -33,5 +33,56 @@
                     Epar<span
                         class="bg-clip-text text-transparent bg-gradient-to-r from-green-400 via-pink-500 to-purple-500">king</span>
                 </a>
+                <% if (request.getSession().getAttribute("username")!=null) { %>
+                    <% if (request.getSession().getAttribute("username").equals("admin")) { %>
+                        <div class="flex w-1/2 justify-end content-center">
+                            <button
+                                class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out mx-6"
+                                type="button">
+                                <a href="sections.jsp">
+                                    Gestion sections
+                                </a>
+                            </button>
+                            <button
+                                class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out"
+                                type="button">
+                                <a href="sections.jsp">
+                                    Gestion places
+                                </a>
+                            </button>
+                        </div>
+                        <% } else { %>
+                            <div class="flex w-1/2 justify-end content-center">
+                                <button
+                                    class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out mx-6"
+                                    type="button">
+                                    <a href="reserver.jsp">
+                                        Reserver
+                                    </a>
+                                </button>
+                                <button
+                                    class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out"
+                                    type="button">
+                                    <a href="reservation.jsp">
+                                        Reservation
+                                    </a>
+                                </button>
+                            </div>
+                            <% } %>
+                                <div class="flex w-1/2 justify-end content-center">
+                                    <p
+                                        class="bg-gray-900 font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out mx-6">
+                                        <% out.println(request.getSession().getAttribute("username")); %>
+                                    </p>
+                                    <button
+                                        class="bg-gradient-to-r from-purple-800 to-green-500 hover:from-pink-500 hover:to-green-500 text-white font-bold py-2 px-4 rounded focus:ring transform transition hover:scale-105 duration-300 ease-in-out"
+                                        type="button">
+                                        <a href="logout">
+                                            Se Deconnecter
+                                        </a>
+                                    </button>
+                                </div>
+                                <% } %>
             </div>
         </div>
+    </div>
