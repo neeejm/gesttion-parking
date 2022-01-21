@@ -5,7 +5,7 @@
         <!-- Start Main -->
         <main class="bg-white max-w-lg mx-auto p-8 md:p-12 my-10 rounded-lg shadow-2xl">
             <section>
-                <h3 class="font-bold text-2xl">Gestion Places</h3>
+                <h3 class="font-bold text-2xl">Reserver</h3>
             </section>
 
             <section class="mt-10">
